@@ -11,13 +11,14 @@ const server = http.createServer(app);
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 
-// ================== DATA DIR ==================
-const DATA_DIR = '/app/data';
+// ================== DATA DIR (HOSTLESS FIX) ==================
+// /app read-only hota hai, isliye hum /app/.cache use kar rahe hain jo writable hai
+const DATA_DIR = '/app/.cache/app-data';
 const TASKS_FILE = path.join(DATA_DIR, 'tasks.json');
 
 try {
     if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
-    console.log(`✅ Data dir: ${DATA_DIR}`);
+    console.log(`✅ Data dir ready: ${DATA_DIR}`);
 } catch (e) {
     console.log(`⚠️ Data dir error: ${e.message}`);
 }
@@ -283,7 +284,7 @@ async function launchPersistentBrowser(taskId, cookiesStr, addLog, forceFresh = 
             '--password-store=basic',
             '--use-mock-keychain',
             '--memory-pressure-off',
-            '--disable-crashpad' // Hostless ke liye extra safety
+            '--disable-crashpad'
         ]
     });
     
